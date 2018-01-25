@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.robin-jonsson.dw</groupId>
+    <artifactId>dropwizard-quartz-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <modules>
+        <module>dropwizard-quartz</module>
+    </modules>
+    <packaging>pom</packaging>
+
+    <description>
+        An easy integration between quartz scheduled jobs and Dropwizard
+    </description>
+
+    <properties>
+        <java.version>1.8</java.version>
+
+        <dropwizard.version>1.2.2</dropwizard.version>
+        <quartz.version>2.3.0</quartz.version>
+
+        <test.junit.version>4.12</test.junit.version>
+        <test.mockito.version>2.13.0</test.mockito.version>
+    </properties>
+
+    <developers>
+        <developer>
+            <name>Robin Jonsson</name>
+            <url>https://github.com/izrobin</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${test.junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${test.mockito.version}</version>
+        </dependency>
+    </dependencies>
+    
+</project>
