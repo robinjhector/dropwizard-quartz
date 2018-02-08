@@ -20,6 +20,14 @@ public abstract class AbstractJob implements Job {
         this(null, null, SharedMetricRegistries.getOrCreate(METRICS_NAME));
     }
 
+    public AbstractJob(final String jobName) {
+        this(jobName, null, SharedMetricRegistries.getOrCreate(METRICS_NAME));
+    }
+
+    public AbstractJob(final String jobName, final String groupName) {
+        this(jobName, groupName, SharedMetricRegistries.getOrCreate(METRICS_NAME));
+    }
+
     public AbstractJob(final MetricRegistry metricRegistry) {
         this(null, null, metricRegistry);
     }
@@ -33,9 +41,8 @@ public abstract class AbstractJob implements Job {
         final String groupName,
         final MetricRegistry registry
     ) {
-        final String name = StringUtils.isNotBlank(jobName) ? jobName : getClass().getName();
+        final String name = StringUtils.isNotBlank(jobName) ? jobName : getClass().getCanonicalName();
         this.quartzJobKey = JobKey.jobKey(name, groupName);
-
         this.timer = registry.timer(quartzJobKey.toString());
     }
 
@@ -46,7 +53,7 @@ public abstract class AbstractJob implements Job {
         }
     }
 
-    public abstract void executeJob(final JobExecutionContext context) throws JobExecutionException;
+    protected abstract void executeJob(final JobExecutionContext context) throws JobExecutionException;
 
     public JobKey getQuartzJobKey() {
         return quartzJobKey;
