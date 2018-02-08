@@ -1,4 +1,4 @@
-package com.robinjonsson.dwquartz.triggers;
+package com.robinjonsson.dwquartz.utils;
 
 import static java.time.Instant.now;
 
@@ -7,9 +7,9 @@ import com.robinjonsson.dwquartz.annotations.InitialDelay;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-class InitialDelayParser {
+public class InitialDelayParser {
 
-    static Date parseStartAt(final AbstractJob job) {
+    public static Date parseStartAt(final AbstractJob job) {
         if (!job.getClass().isAnnotationPresent(InitialDelay.class)) {
             return Date.from(now());
         }

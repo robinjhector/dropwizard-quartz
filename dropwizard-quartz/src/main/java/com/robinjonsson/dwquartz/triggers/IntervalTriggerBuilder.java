@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toSet;
 import com.robinjonsson.dwquartz.AbstractJob;
 import com.robinjonsson.dwquartz.annotations.Interval;
 import com.robinjonsson.dwquartz.annotations.MisfirePolicy;
+import com.robinjonsson.dwquartz.utils.InitialDelayParser;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

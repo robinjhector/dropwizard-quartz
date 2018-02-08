@@ -2,6 +2,7 @@ package com.robinjonsson.dwquartz.triggers;
 
 import com.robinjonsson.dwquartz.AbstractJob;
 import com.robinjonsson.dwquartz.annotations.OnEvent;
+import com.robinjonsson.dwquartz.utils.InitialDelayParser;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;

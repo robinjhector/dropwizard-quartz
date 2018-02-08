@@ -7,6 +7,8 @@ import com.robinjonsson.dwquartz.annotations.Cron;
 import com.robinjonsson.dwquartz.annotations.InitialDelay;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Test;
 
@@ -25,19 +27,33 @@ public class CronJobTest {
 
     @Test
     public void shouldExecuteCronJob() throws Exception {
-        final CronJob cronJob = new CronJob();
+        final CronJob cronJob = new CronJob(1);
         scheduler = createScheduler(cronJob);
         scheduler.start();
 
-        Thread.sleep(100);
+        final CountDownLatch executionsLeft = cronJob.getExecutionsLeft();
+        assertTrue(executionsLeft.await(1, TimeUnit.SECONDS));
+    }
 
-        assertFalse(cronJob.isComplete());
-        assertTrue(cronJob.isRunning());
+    @Test
+    public void shouldExecuteEachSecond() throws Exception {
+        final CronJob cronJob = new CronJob(3);
+        scheduler = createScheduler(cronJob);
+        scheduler.start();
 
-        cronJob.getLatch().countDown();
+        final CountDownLatch executionsLeft = cronJob.getExecutionsLeft();
+        assertTrue(executionsLeft.await(3, TimeUnit.SECONDS));
+    }
 
-        assertTrue(cronJob.isComplete());
-        assertFalse(cronJob.isRunning());
+    @Test
+    public void shouldExecuteAfterInitialDelay() throws Exception {
+        final CronJobInitialDelay cronJob = new CronJobInitialDelay();
+        scheduler = createScheduler(cronJob);
+        scheduler.start();
+
+        final CountDownLatch executionsLeft = cronJob.getExecutionsLeft();
+        assertFalse(executionsLeft.await(1, TimeUnit.SECONDS));
+        assertTrue(executionsLeft.await(1, TimeUnit.SECONDS));
     }
 
     private QuartzScheduler createScheduler(final AbstractJob... jobs) {
@@ -49,16 +65,16 @@ public class CronJobTest {
 
     @Cron("0/1 * * * * ?")
     public static class CronJob extends LatchJob {
-        public CronJob() {
-            super("CronJob");
+        public CronJob(final int executions) {
+            super("CronJob", executions);
         }
     }
 
     @Cron("0/1 * * * * ?")
-    @InitialDelay(delay = 5)
+    @InitialDelay(delay = 2)
     public static class CronJobInitialDelay extends LatchJob {
         public CronJobInitialDelay() {
-            super("CronJobInitialDelay");
+            super("CronJobInitialDelay", 1);
         }
     }
 }
