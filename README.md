@@ -65,7 +65,7 @@ public class MyJob extends AbstractJob {
     }
 }
 ```
-Above class will be run every 2 minutes, indefinitely 
+Above job will be run every 2 minutes, indefinitely 
 
 #### Cron
 ```java
@@ -77,7 +77,7 @@ public class MyJob extends AbstractJob {
     }
 }
 ```
-Above class will be run at 2am every day in december, at UTC time.
+Above job will be run at 2am every day in december, at UTC time.
 
 
 #### On Event
@@ -90,7 +90,7 @@ public class MyJob extends AbstractJob {
     }
 }
 ```
-Above will run the job as soon as Quartz is configured and running. 
+Above job will be run as soon as Quartz is configured and running. 
 There are 2 types of events built-in:
  - `EventType.APPLICATION_START`
  - `EventType.APPLICATION_STOP`
@@ -128,6 +128,17 @@ A qualifying method to determine if your TriggerBuilder should built the trigger
 Set<? extends Trigger> buildTriggers(final AbstractJob job);
 ```
 Return a set of triggers to be scheduled for this job.
+
+And later add it to the `QuartzManager`
+
+````java
+final Set<CustomTriggerBuilder> customTriggerBuilders = ...
+final QuartzManager quartzManager = new QuartzManager(
+            config,
+            jobs,
+            customTriggerBuilders
+        );
+````
 
 
 ##### Custom triggers via code
