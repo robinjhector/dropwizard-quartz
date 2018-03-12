@@ -1,5 +1,7 @@
 # Quartz integration for Dropwizard
 
+[![Build Status](https://travis-ci.org/izrobin/dropwizard-quartz.svg?branch=master)](https://travis-ci.org/izrobin/dropwizard-quartz)
+
 ### About
 This project aims to ease the integration of quartz to Dropwizard, by making configuration easy with annotations and simple configuration.
 
