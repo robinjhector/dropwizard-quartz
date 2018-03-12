@@ -3,6 +3,7 @@ package com.robinjonsson.dwquartz;
 import com.robinjonsson.dwquartz.triggers.CustomTriggerBuilder;
 import io.dropwizard.lifecycle.Managed;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -14,9 +15,9 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QuartzScheduler implements Managed {
+public class QuartzManager implements Managed {
 
-    private static final Logger LOG = LoggerFactory.getLogger(QuartzScheduler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(QuartzManager.class);
 
     private final QuartzConfiguration config;
     private final Set<AbstractJob> jobs;
@@ -24,7 +25,7 @@ public class QuartzScheduler implements Managed {
 
     private Scheduler scheduler;
 
-    public QuartzScheduler(
+    public QuartzManager(
         final QuartzConfiguration config,
         final Set<AbstractJob> jobs
     ) {
@@ -35,7 +36,7 @@ public class QuartzScheduler implements Managed {
         );
     }
 
-    public QuartzScheduler(
+    public QuartzManager(
         final QuartzConfiguration config,
         final Set<AbstractJob> jobs,
         final Set<CustomTriggerBuilder> customCustomTriggerBuilders
@@ -66,12 +67,19 @@ public class QuartzScheduler implements Managed {
 
     private void scheduleJob(final AbstractJob job) {
         final JobDetail jobDetail = quartzBuilder.buildJobDetail(job);
-        final Set<? extends Trigger> triggers = quartzBuilder.buildTriggers(job);
 
         try {
+            final Set<? extends Trigger> triggers = quartzBuilder.buildTriggers(job);
+            final Optional<? extends Trigger> firstTrigger = triggers.stream().findFirst();
             scheduler.scheduleJob(jobDetail, triggers, true);
-            LOG.info("Scheduled {} with trigger {}", jobDetail);
-        } catch (final SchedulerException e) {
+
+            LOG.info("Scheduled [group={}, name={}] with trigger [class={}, nextExecution={}]",
+                jobDetail.getKey().getGroup(),
+                jobDetail.getKey().getName(),
+                firstTrigger.get().getClass().getSimpleName(),
+                firstTrigger.get().getNextFireTime()
+            );
+        } catch (final QuartzSchedulingException | SchedulerException e) {
             throw new IllegalStateException(e);
         }
     }

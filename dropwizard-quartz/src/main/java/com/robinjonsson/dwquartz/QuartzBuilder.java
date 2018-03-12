@@ -5,23 +5,17 @@ import com.robinjonsson.dwquartz.triggers.CustomTriggerBuilder;
 import com.robinjonsson.dwquartz.triggers.EventTriggerBuilder;
 import com.robinjonsson.dwquartz.triggers.FineTunedTriggerBuilder;
 import com.robinjonsson.dwquartz.triggers.IntervalTriggerBuilder;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to parse annotation config & class config into Quartz JobDetails & Triggers
  */
 class QuartzBuilder {
-
-    private static final Logger LOG = LoggerFactory.getLogger(QuartzBuilder.class);
 
     private final Set<CustomTriggerBuilder> triggerBuilders;
 
@@ -43,16 +37,15 @@ class QuartzBuilder {
             .build();
     }
 
-    Set<? extends Trigger> buildTriggers(final AbstractJob job) {
-        final Optional<CustomTriggerBuilder> triggerBuilder = triggerBuilders.stream()
+    Set<? extends Trigger> buildTriggers(final AbstractJob job) throws QuartzSchedulingException {
+        final CustomTriggerBuilder triggerBuilder = triggerBuilders.stream()
             .filter(tb -> tb.canBuildTrigger(job))
-            .findFirst();
+            .findFirst()
+            .orElseThrow(() -> new QuartzSchedulingException(String.format(
+                "No suitable trigger builders for class %s. Can not schedule this job!",
+                job.getClass()
+            )));
 
-        if (!triggerBuilder.isPresent()) {
-            LOG.warn("No suitable trigger builders for class {}. Can not schedule this job!", job.getClass());
-            return Collections.emptySet();
-        }
-
-        return triggerBuilder.get().buildTriggers(job);
+        return triggerBuilder.buildTriggers(job);
     }
 }

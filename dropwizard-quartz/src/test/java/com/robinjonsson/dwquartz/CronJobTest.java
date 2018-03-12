@@ -14,7 +14,7 @@ import org.junit.Test;
 
 public class CronJobTest {
 
-    private QuartzScheduler scheduler;
+    private QuartzManager scheduler;
 
     private final QuartzConfiguration testConfig = new QuartzConfiguration() {
 
@@ -56,8 +56,8 @@ public class CronJobTest {
         assertTrue(executionsLeft.await(1, TimeUnit.SECONDS));
     }
 
-    private QuartzScheduler createScheduler(final AbstractJob... jobs) {
-        return new QuartzScheduler(
+    private QuartzManager createScheduler(final AbstractJob... jobs) {
+        return new QuartzManager(
             testConfig,
             new HashSet<>(Arrays.asList(jobs))
         );

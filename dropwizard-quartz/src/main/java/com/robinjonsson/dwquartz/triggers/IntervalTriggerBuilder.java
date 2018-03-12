@@ -32,15 +32,15 @@ public class IntervalTriggerBuilder implements CustomTriggerBuilder {
         final Interval annotation = job.getClass().getAnnotation(Interval.class);
         final DayOfWeek[] dayOfWeekEnums = annotation.daysOfWeek();
         final int frequency = annotation.frequency();
-        final ChronoUnit frequencyTimeunit = annotation.timeUnit();
+        final ChronoUnit frequencyTimeUnit = annotation.timeUnit();
         final MisfirePolicy misfirePolicy = annotation.misfirePolicy();
 
-        final long intervalMillis = Duration.of(frequency, frequencyTimeunit).toMillis();
+        final long intervalSeconds = Duration.of(frequency, frequencyTimeUnit).getSeconds();
         final Set<Integer> dayOfWeek = Arrays.stream(dayOfWeekEnums).map(DayOfWeek::getValue).collect(toSet());
 
         final DailyTimeIntervalScheduleBuilder schedule = DailyTimeIntervalScheduleBuilder
             .dailyTimeIntervalSchedule()
-            .withInterval((int) intervalMillis, DateBuilder.IntervalUnit.MILLISECOND)
+            .withInterval((int) intervalSeconds, DateBuilder.IntervalUnit.SECOND)
             .onDaysOfTheWeek(dayOfWeek);
 
         misfirePolicy.apply(schedule);
