@@ -7,8 +7,12 @@ import java.util.Map;
 import java.util.Set;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EventManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EventManager.class);
 
     private static final EventManager INSTANCE = new EventManager();
 
@@ -20,7 +24,7 @@ public class EventManager {
 
     public void setScheduler(final Scheduler scheduler) {
         if (this.scheduler != null) {
-            throw new IllegalArgumentException("Cannot override scheduler");
+            LOG.warn("Overriding scheduler! old_scheduler={}, new_scheduler={}", this.scheduler, scheduler);
         }
         this.scheduler = scheduler;
     }
@@ -43,6 +47,7 @@ public class EventManager {
         if (scheduler == null) {
             throw new IllegalStateException("Cannot trigger job before scheduler has been set!");
         }
+        LOG.info("Triggering jobs for eventType={}", eventType);
         final Set<AbstractJob> consumers = registeredConsumers.getOrDefault(eventType, new HashSet<>());
         consumers.forEach(this::triggerNow);
     }
