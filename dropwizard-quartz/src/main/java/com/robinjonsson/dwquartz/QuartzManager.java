@@ -1,5 +1,7 @@
 package com.robinjonsson.dwquartz;
 
+import com.robinjonsson.dwquartz.event.EventManager;
+import com.robinjonsson.dwquartz.event.EventType;
 import com.robinjonsson.dwquartz.triggers.CustomTriggerBuilder;
 import io.dropwizard.lifecycle.Managed;
 import java.util.Collections;
@@ -63,6 +65,9 @@ public class QuartzManager implements Managed {
         scheduler.start();
 
         jobs.forEach(this::scheduleJob);
+
+        EventManager.getInstance().setScheduler(scheduler);
+        EventManager.getInstance().trigger(EventType.APPLICATION_START);
     }
 
     private void scheduleJob(final AbstractJob job) {
@@ -87,6 +92,9 @@ public class QuartzManager implements Managed {
     @Override
     public void stop() throws Exception {
         LOG.info("Stopping Quartz Scheduler... (Waiting for all jobs to complete)");
+        EventManager.getInstance().trigger(EventType.APPLICATION_STOP);
+        //Wait for event type APPLICATION_STOP to trigger jobs
+        Thread.sleep(100);
         scheduler.shutdown(true);
     }
 

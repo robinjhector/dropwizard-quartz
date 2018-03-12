@@ -2,9 +2,11 @@ package com.robinjonsson.dwquartz.triggers;
 
 import com.robinjonsson.dwquartz.AbstractJob;
 import com.robinjonsson.dwquartz.annotations.OnEvent;
-import com.robinjonsson.dwquartz.utils.InitialDelayParser;
+import com.robinjonsson.dwquartz.event.EventManager;
+import com.robinjonsson.dwquartz.event.EventType;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Set;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
@@ -18,24 +20,18 @@ public class EventTriggerBuilder implements CustomTriggerBuilder {
 
     @Override
     public Set<? extends Trigger> buildTriggers(final AbstractJob job) {
-        final Date startAt = InitialDelayParser.parseStartAt(job);
-
         final OnEvent annotation = job.getClass().getAnnotation(OnEvent.class);
-        final OnEvent.Event event = annotation.value();
+        final EventType eventType = annotation.value();
 
-        if (OnEvent.Event.APPLICATION_START.equals(event)) {
-            return buildTriggerNow(startAt);
-        } else if(OnEvent.Event.APPLICATION_STOP.equals(event)) {
-            //TODO: Implement on app stop!
-        }
-        return Collections.emptySet();
-    }
+        //Seems like this is the only way to make a trigger with no execution schedule.
+        final Instant year4000 = Instant.parse("4000-01-01T00:00:00.000Z");
 
-    private Set<? extends Trigger> buildTriggerNow(final Date startAt) {
+        EventManager.getInstance().subscribe(eventType, job);
+
         return Collections.singleton(
             TriggerBuilder
                 .newTrigger()
-                .startAt(startAt)
+                .startAt(Date.from(year4000))
                 .build()
         );
     }
